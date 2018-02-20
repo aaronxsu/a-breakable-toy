@@ -1,0 +1,22 @@
+---
+- hosts: all
+  connection: local
+  become: True
+
+  pre_tasks:
+    - name: Update APT cache
+      apt: update_cache=yes cache_valid_time=3600
+
+  roles:
+    - { role: "azavea.python-security", when: 'ansible_python_version | version_compare("2.7.9", "<")' }
+    - role: "azavea.docker"
+
+  tasks:
+    - name: Install Docker Compose
+      pip: name=docker-compose version={{ docker_compose_version }}
+
+    - name: Add Ansible user to Docker group
+      user: name="{{ item }}"
+            groups=docker
+            append=yes
+      with_items: "{{ docker_users }}"

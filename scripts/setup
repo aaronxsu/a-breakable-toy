@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# if there is error, exit the script
+set -e
+
+if [[ -n "${DEBUG}" ]]; then
+    # prints the command it ran
+    set -x
+fi
+
+function usage() {
+    echo -n \
+         "Usage: $(basename "$0")
+Attempts to setup the project's development environment.
+"
+}
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]
+then
+    if [ "${1:-}" = "--help" ]
+    then
+        usage
+    else
+        vagrant up --provision
+    fi
+fi

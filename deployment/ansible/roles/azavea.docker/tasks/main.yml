@@ -1,0 +1,15 @@
+---
+- name: Download Docker APT key
+  apt_key: url={{ docker_repository_url }}/gpg id=0EBFCD88 state=present
+
+- name: Configure the Docker APT repository
+  apt_repository: repo="deb {{ docker_repository_url }} {{ ansible_distribution_release }} stable"
+                  state=present
+
+- name: Install Docker
+  apt: pkg="{{ docker_package_name }}={{ docker_version }}" state=present
+
+- name: Configure Docker
+  template: src=docker.j2 dest=/etc/default/docker
+  notify:
+    - Restart Docker
