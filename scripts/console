@@ -1,0 +1,33 @@
+#!/bin/bash
+set -eu
+
+DIR="$(dirname "$0")"
+
+function usage() {
+    echo -n \
+"Usage: $(basename "$0") SERVICE COMMAND[S]
+Use Docker Compose to run a command for a service, or drop into a console.
+
+Example: ./scripts/console api-server \"./sbt\"
+"
+}
+
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]
+then
+    if [ "${1:-}" = "--help" ]
+    then
+        usage
+    else
+        # run a one time command against a service/container
+        # remove the container after run
+        # use the service port and entry point specified in the docker-compose file
+        # the -c option is present, then commands are read from string.
+        # If there are arguments after the string, they are assigned to the positional parameters,
+        # starting with $0.
+        docker-compose -f "${DIR}/../docker-compose.yml" \
+                       run --rm --service-ports --entrypoint \
+                       "/bin/bash -c" "$1" "${@:2}"
+    fi
+    exit
+fi

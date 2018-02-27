@@ -1,0 +1,41 @@
+version: '2.3'
+services:
+  postgres:
+    image: quay.io/azavea/postgis:2.3-postgres9.6-slim
+    volumes:
+      - ./data/:/tmp/data/
+    env_file: .env
+    expose:
+      - "5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # api-server:
+  #   image: openjdk:8-jre
+  #   links:
+  #     - postgres
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   env_file: .env
+  #   ports:
+  #     - "9000:9000"
+  #     - "9010:9010"
+  #   volumes:
+  #     - ./app-backend/:/opt/a-breakable-toy/app-backend/
+  #     - ./.sbt:/root/.sbt
+  #   working_dir: /opt/a-breakable-toy/app-backend/
+  #   entrypoint: ./sbt
+  #   command:
+  #     - "api/run"
+  #     - "-Dcom.sun.management.jmxremote.rmi.port=9010"
+  #     - "-Dcom.sun.management.jmxremote=true"
+  #     - "-Dcom.sun.management.jmxremote.port=9010"
+  #     - "-Dcom.sun.management.jmxremote.ssl=false"
+  #     - "-Dcom.sun.management.jmxremote.authenticate=false"
+  #     - "-Dcom.sun.management.jmxremote.local.only=false"
+  #     - "-Djava.rmi.server.hostname=localhost"

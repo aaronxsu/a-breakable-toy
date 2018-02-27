@@ -1,0 +1,26 @@
+#!/bin/bash
+set -eu
+
+function usage() {
+    echo -n \
+"Usage: $(basename "$0")
+Use Docker Compose to drop into a psql console.
+"
+}
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]
+then
+    if [ "${1:-}" = "--help" ]
+    then
+        usage
+    else
+        # build, create, start, and attach to postgres container
+        # and run it in the detached mode
+        docker-compose up -d postgres
+        # run postgres service's arbitrary commands with abreakabletoy as user anme and db name
+        # need to specify the port it should run on as well - though this is not the case in RF
+        docker-compose \
+            exec postgres bash -c "psql -U abreakabletoy -d abreakabletoy -p 5432"
+    fi
+    exit
+fi

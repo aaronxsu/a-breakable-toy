@@ -1,1 +1,1 @@
-{"virtualbox":{"/vagrant":{"guestpath":"/vagrant","hostpath":"/Users/xunzesu/Documents/projects/breakable-toy","disabled":false,"__vagrantfile":true}}}
+{"rsync":{"/opt/a-breakable-toy":{"type":"rsync","guestpath":"/opt/a-breakable-toy","hostpath":"/Users/asu/Documents/projects/a-breakable-toy","disabled":false,"__vagrantfile":true,"owner":"vagrant","group":"vagrant"}}}
