@@ -18,6 +18,7 @@ Vagrant.configure(2) do |config|
 
   config.vm.provision "shell" do |s|
     s.inline = <<-SHELL
+      echo "cd /opt/a-breakable-toy" >> ~/.profile
       if [ ! -x /usr/local/bin/ansible ] || ! ansible --version | grep #{ANSIBLE_VERSION}; then
         sudo apt-get update -qq
         sudo apt-get install python-pip python-dev -y

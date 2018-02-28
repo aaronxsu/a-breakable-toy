@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -e
+
+function usage() {
+
+    echo -n \
+"Usage: $(basename "$0")
+Setup external project dependencies.
+"
+}
+
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]
+then
+    if [ "${1:-}" = "--help" ]
+    then
+        usage
+    else
+        echo "Updating Scala dependencies"
+        docker-compose up -d api-server
+
+        docker-compose exec -T api-server ./sbt update
+        docker-compose rm -sf api-server
+    fi
+    exit
+fi
