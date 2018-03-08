@@ -8,8 +8,17 @@ ANSIBLE_VERSION = "2.3.1.0"
 Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/trusty64"
 
+  config.vm.network :forwarded_port, guest: 8080, host: 8080
+
   config.vm.synced_folder ".", "/vagrant", disabled: true
-  config.vm.synced_folder ".", "/opt/a-breakable-toy", type: "rsync"
+  config.vm.synced_folder ".", "/opt/a-breakable-toy", type: "rsync",
+    rsync__exclude: [".git/", "app-backend/.ensime/",
+                     "app-backend/.ensime_cache/", "app-backend/.idea/",
+                     "app-backend/project/.boot/", "app-backend/project/.ivy/",
+                     "app-backend/project/.sbtboot/", "app-server/**/target/",
+                     "app-backend/**/target/", "worker-tasks/**/target/",
+                     ".sbt/", ".node_modules/",
+                     "deployment/ansible/roles/azavea*/"]
 
   config.vm.provider :virtualbox do |vb|
     vb.memory = 2048
@@ -18,7 +27,7 @@ Vagrant.configure(2) do |config|
 
   config.vm.provision "shell" do |s|
     s.inline = <<-SHELL
-      echo "cd /opt/a-breakable-toy" >> ~/.profile
+      echo "cd /opt/a-breakable-toy" >> ~/.bashrc
       if [ ! -x /usr/local/bin/ansible ] || ! ansible --version | grep #{ANSIBLE_VERSION}; then
         sudo apt-get update -qq
         sudo apt-get install python-pip python-dev -y
