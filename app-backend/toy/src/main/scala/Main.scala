@@ -6,28 +6,27 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import scala.io.StdIn
+import com.typesafe.config.{ConfigFactory, Config}
 
 object WebServer {
   def main(args: Array[String]) {
 
     implicit val system = ActorSystem("my-system")
     implicit val materializer = ActorMaterializer()
-    // needed for the future flatMap/onComplete in the end
-    // implicit val executionContext = system.dispatcher
+    val config = ConfigFactory.load()
 
-    val route =
-      pathPrefix("hello") {
-        get {
-          complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Say hello to akka-http</h1>"))
+    val routes =
+      get {
+        pathSingleSlash {
+          complete {
+            HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Say hello to akka-http</h1>")
+          }
         }
       }
 
-    val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
+    println(config.getString("http.address"))
+    println(config.getInt("http.port"))
 
-    // println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
-    // StdIn.readLine() // let it run until user presses return
-    // bindingFuture
-    //   .flatMap(_.unbind()) // trigger unbinding from the port
-    //   .onComplete(_ => system.terminate()) // and shutdown when done
+    Http().bindAndHandle(routes, config.getString("http.address"), config.getInt("http.port"))
   }
 }

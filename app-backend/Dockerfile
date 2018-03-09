@@ -10,5 +10,7 @@ WORKDIR /opt/a-breakable-toy/toy/
 # RUN ./sbt migrations/update && \
     # ./sbt migrations/compile
 
+EXPOSE 4567
+
 # Run the sbt command once the container launches
 CMD ["sbt"]

@@ -8,7 +8,7 @@ ANSIBLE_VERSION = "2.3.1.0"
 Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/trusty64"
 
-  config.vm.network :forwarded_port, guest: 8080, host: 8080
+  config.vm.network :forwarded_port, guest: 4567, host: 4567, host_ip: "127.0.0.1"
 
   config.vm.synced_folder ".", "/vagrant", disabled: true
   config.vm.synced_folder ".", "/opt/a-breakable-toy", type: "rsync",
@@ -27,7 +27,6 @@ Vagrant.configure(2) do |config|
 
   config.vm.provision "shell" do |s|
     s.inline = <<-SHELL
-      echo "cd /opt/a-breakable-toy" >> ~/.bashrc
       if [ ! -x /usr/local/bin/ansible ] || ! ansible --version | grep #{ANSIBLE_VERSION}; then
         sudo apt-get update -qq
         sudo apt-get install python-pip python-dev -y
