@@ -1,5 +1,7 @@
 FROM hseeberger/scala-sbt
 
+ENV SCALA_VERSION 2.11.11
+
 # Copy the contents in the current directory into the container at /opt/a-breakable-toy
 COPY ./ /opt/a-breakable-toy
 
