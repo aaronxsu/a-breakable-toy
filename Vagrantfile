@@ -18,12 +18,18 @@ Vagrant.configure(2) do |config|
                      "app-backend/project/.sbtboot/", "app-server/**/target/",
                      "app-backend/**/target/", "worker-tasks/**/target/",
                      ".sbt/", ".node_modules/",
-                     "deployment/ansible/roles/azavea*/"]
+                     "deployment/ansible/roles/azavea*/"],
+    rsync__args: ["--verbose", "--archive", "-z"],
+    rsync__rsync_path: "sudo rsync"
+
+  config.vm.synced_folder "~/.aws", "/home/vagrant/.aws"
 
   config.vm.provider :virtualbox do |vb|
-    vb.memory = 2048
+    vb.memory = 8192
     vb.cpus = 2
   end
+
+  aws_profile = ENV.fetch("RF_AWS_PROFILE", "raster-foundry")
 
   config.vm.provision "shell" do |s|
     s.inline = <<-SHELL
@@ -39,6 +45,8 @@ Vagrant.configure(2) do |config|
       ANSIBLE_FORCE_COLOR=1 PYTHONUNBUFFERED=1 ANSIBLE_CALLBACK_WHITELIST=profile_tasks \
       ansible-playbook -u vagrant -i 'localhost,' main.yml
       cd /opt/a-breakable-toy
+
+      export AWS_PROFILE=#{aws_profile}
 
       su vagrant ./scripts/bootstrap
     SHELL

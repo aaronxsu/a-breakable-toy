@@ -30,6 +30,7 @@ services:
       - ./app-backend/:/opt/a-breakable-toy/app-backend/
       - ./.sbt:/root/.sbt
       - ./.bintray:/root/.bintray
+      - $HOME/.aws:/root/.aws:ro
     entrypoint: sbt
     command:
       - "run"
