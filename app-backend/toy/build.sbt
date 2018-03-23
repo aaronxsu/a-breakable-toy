@@ -28,8 +28,11 @@ lazy val root = (project in file(".")).
       scalaTest % Test,
       akkaHttp,
       akkaStream,
-      geotrellis,
-      apacheSpark
+      geotrellisSpark,
+      geotrellisS3,
+      apacheSpark,
+      awsSdk,
+      apacheCommonIO
     ),
     initialCommands in console := """
       |import geotrellis.raster._
