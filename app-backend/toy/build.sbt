@@ -31,7 +31,8 @@ lazy val root = (project in file(".")).
       geotrellisSpark,
       geotrellisS3,
       apacheSpark,
-      awsSdk
+      awsSdk,
+      apacheCommonIO
     ),
     initialCommands in console := """
       |import geotrellis.raster._

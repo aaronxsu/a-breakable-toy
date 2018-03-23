@@ -8,4 +8,5 @@ object Dependencies {
   lazy val geotrellisS3 = "org.locationtech.geotrellis" %% "geotrellis-s3" % "1.2.0-RC2"
   lazy val apacheSpark = "org.apache.spark" %% "spark-core" % "2.2.0" % Provided
   lazy val awsSdk = "com.amazonaws" % "aws-java-sdk" % "1.11.92"
+  lazy val apacheCommonIO = "commons-io" % "commons-io" % "2.4"
 }

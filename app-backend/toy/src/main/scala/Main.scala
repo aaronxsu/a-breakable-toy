@@ -30,7 +30,7 @@ object WebServer {
     lazy val fileAsBytes: Array[Byte] = getBytes(fileName)
 
     asBytes match {
-      case Some(true) => HttpEntity(ContentTypes.`text/html(UTF-8)`, s"""<p>${new String(fileAsBytes, "UTF-8")}</p>""")
+      case Some(true) => HttpEntity(ContentTypes.`text/html(UTF-8)`, fileAsBytes)
       case _ => {
         HttpEntity(ContentTypes.`text/html(UTF-8)`, s"""<h1>${fileName}</h1>
           <h2>CRS: ${tiffData.crs}</h2>
@@ -43,7 +43,7 @@ object WebServer {
     val fileAsBytes: Array[Byte] = getBytes(bucket, key)
 
     asBytes match {
-      case Some(true) => HttpEntity(ContentTypes.`text/html(UTF-8)`, s"""<p>${new String(fileAsBytes, "UTF-8")}</p>""")
+      case Some(true) => HttpEntity(ContentTypes.`text/html(UTF-8)`, fileAsBytes)
       case _ => {
         val tiffData: SinglebandGeoTiff = readRasterData(fileAsBytes)
         HttpEntity(ContentTypes.`text/html(UTF-8)`, s"""<h1>Bucket: ${bucket}</h1>
