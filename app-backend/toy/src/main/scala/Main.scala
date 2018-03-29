@@ -62,13 +62,6 @@ object WebServer {
     HttpEntity(MediaTypes.`image/png`, pngBytes)
   }
 
-  // def readLocalFileAsPng(fileName: String): Array[Byte] = {
-  //   val tiffData: SinglebandGeoTiff = readRasterData(fileName)
-  //   // val pngBytes: Array[Byte] = tiffData.tile.renderPng.bytes
-  //   // HttpEntity(ContentTypes.`image/png`, pngBytes)
-  //   tiffData.tile.renderPng.bytes
-  // }
-
   def main(args: Array[String]) {
     implicit val system = ActorSystem("my-system")
     implicit val materializer = ActorMaterializer()
