@@ -56,6 +56,19 @@ object WebServer {
     }
   }
 
+  def readLocalFileAsPng(fileName: String) = complete {
+    val tiffData: SinglebandGeoTiff = readRasterData(fileName)
+    val pngBytes: Array[Byte] = tiffData.tile.renderPng.bytes
+    HttpEntity(MediaTypes.`image/png`, pngBytes)
+  }
+
+  // def readLocalFileAsPng(fileName: String): Array[Byte] = {
+  //   val tiffData: SinglebandGeoTiff = readRasterData(fileName)
+  //   // val pngBytes: Array[Byte] = tiffData.tile.renderPng.bytes
+  //   // HttpEntity(ContentTypes.`image/png`, pngBytes)
+  //   tiffData.tile.renderPng.bytes
+  // }
+
   def main(args: Array[String]) {
     implicit val system = ActorSystem("my-system")
     implicit val materializer = ActorMaterializer()
@@ -74,6 +87,13 @@ object WebServer {
               parameter("bucket".as[String], "key".as[String], "asBytes".as[Boolean].?) { (bucket, key, asBytes) =>
                 get { readS3File(bucket, key, asBytes) }
               }
+            }
+          }
+        } ~
+        pathPrefix("png") {
+          pathPrefix("local") {
+            parameter("name".as[String]) { (name) =>
+              get { readLocalFileAsPng(name) }
             }
           }
         }
