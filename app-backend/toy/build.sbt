@@ -22,7 +22,8 @@ lazy val root = (project in file(".")).
     pomIncludeRepository := { _ => false },
     resolvers ++= Seq(
       "locationtech-releases" at "https://repo.locationtech.org/content/groups/releases",
-      "locationtech-snapshots" at "https://repo.locationtech.org/content/groups/snapshots"
+      "locationtech-snapshots" at "https://repo.locationtech.org/content/groups/snapshots",
+      Resolver.bintrayRepo("hseeberger", "maven")
     ),
     libraryDependencies ++= Seq(
       scalaTest % Test,
@@ -30,18 +31,16 @@ lazy val root = (project in file(".")).
       akkaStream,
       geotrellisSpark,
       geotrellisS3,
+      geotrellisRaster,
       apacheSpark,
       awsSdk,
-      apacheCommonIO
+      apacheCommonIO,
+      circeCore,
+      circeGeneric,
+      circeGenericExtras,
+      circeParser,
+      circeOptics,
+      akkaCirceJson
     ),
-    initialCommands in console := """
-      |import geotrellis.raster._
-      |import geotrellis.vector._
-      |import geotrellis.proj4._
-      |import geotrellis.spark._
-      |import geotrellis.spark.io._
-      |import geotrellis.spark.io.hadoop._
-      |import geotrellis.spark.tiling._
-      |import geotrellis.spark.util._
-      """.stripMargin
-    )
+    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+  )

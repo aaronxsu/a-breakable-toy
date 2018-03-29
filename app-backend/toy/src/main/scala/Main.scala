@@ -3,16 +3,23 @@ package com.github.aaronxsu
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import scala.io.StdIn
 import com.typesafe.config.ConfigFactory
+import io.circe._
+import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
 
 import geotrellis.spark._
 import geotrellis.spark.io._
 import geotrellis.spark.io.s3._
 import geotrellis.raster.io.geotiff.reader.GeoTiffReader
 import geotrellis.raster.io.geotiff._
+
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object WebServer {
 
@@ -32,9 +39,7 @@ object WebServer {
     asBytes match {
       case Some(true) => HttpEntity(ContentTypes.`text/html(UTF-8)`, fileAsBytes)
       case _ => {
-        HttpEntity(ContentTypes.`text/html(UTF-8)`, s"""<h1>${fileName}</h1>
-          <h2>CRS: ${tiffData.crs}</h2>
-          <h2>Extent: ${tiffData.extent}</h2>""")
+        Future{ImageryStats(tiffData.tile.statistics.get)}
       }
     }
   }
@@ -46,10 +51,7 @@ object WebServer {
       case Some(true) => HttpEntity(ContentTypes.`text/html(UTF-8)`, fileAsBytes)
       case _ => {
         val tiffData: SinglebandGeoTiff = readRasterData(fileAsBytes)
-        HttpEntity(ContentTypes.`text/html(UTF-8)`, s"""<h1>Bucket: ${bucket}</h1>
-          <h2>Key: ${key}</h2>
-          <h2>Extent: ${tiffData.crs}</h2>
-          <h2>Extent: ${tiffData.extent}</h2>""")
+        Future{ImageryStats(tiffData.tile.statistics.get)}
       }
     }
   }
