@@ -4,5 +4,5 @@
   - Vagrant + Docker Development Environment - Done
   - Nginx
   - Akka-HTTP - Done
-  - [GeoTrellis](https://github.com/locationtech/geotrellis) + some Tiff Processing - In progress
-  - Doobie for database access
+  - [GeoTrellis](https://github.com/locationtech/geotrellis) + some Tiff Processing - Done
+  - Doobie for database access - In progress
