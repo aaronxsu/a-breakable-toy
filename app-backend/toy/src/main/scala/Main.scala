@@ -16,6 +16,7 @@ import geotrellis.spark.io._
 import geotrellis.spark.io.s3._
 import geotrellis.raster.io.geotiff.reader.GeoTiffReader
 import geotrellis.raster.io.geotiff._
+import geotrellis.raster.render.ColorMap
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
@@ -56,10 +57,25 @@ object WebServer {
     }
   }
 
+  def singleBandTifToPngBytes(tiffData: SinglebandGeoTiff): Array[Byte] = {
+    val s = "viridis"
+    val pixels = 512
+    val zmin = 0
+    val zmax = 255
+    val interval = 20
+    val colorMap = ColorMap(
+      (zmin to zmax by interval).toArray,
+      ColorOptions.fromString(s).getOrElse(ColorOptions.default)
+    )
+    tiffData.tile.resample(pixels, pixels).renderPng(colorMap).bytes
+  }
+
   def readLocalFileAsPng(fileName: String) = complete {
-    val tiffData: SinglebandGeoTiff = readRasterData(fileName)
-    val pngBytes: Array[Byte] = tiffData.tile.renderPng.bytes
-    HttpEntity(MediaTypes.`image/png`, pngBytes)
+    HttpEntity(MediaTypes.`image/png`, singleBandTifToPngBytes(readRasterData(fileName)))
+  }
+
+  def readS3FileAsPng(bucket: String, key: String) = complete {
+    HttpEntity(MediaTypes.`image/png`, singleBandTifToPngBytes(readRasterData(getBytes(bucket, key))))
   }
 
   def main(args: Array[String]) {
@@ -87,6 +103,11 @@ object WebServer {
           pathPrefix("local") {
             parameter("name".as[String]) { (name) =>
               get { readLocalFileAsPng(name) }
+            }
+          } ~
+          pathPrefix("s3") {
+            parameter("bucket".as[String], "key".as[String]) { (bucket, key) =>
+              get { readS3FileAsPng(bucket, key) }
             }
           }
         }
