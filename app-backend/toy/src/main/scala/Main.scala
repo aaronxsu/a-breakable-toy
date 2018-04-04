@@ -3,16 +3,24 @@ package com.github.aaronxsu
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import scala.io.StdIn
 import com.typesafe.config.ConfigFactory
+import io.circe._
+import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
 
 import geotrellis.spark._
 import geotrellis.spark.io._
 import geotrellis.spark.io.s3._
 import geotrellis.raster.io.geotiff.reader.GeoTiffReader
 import geotrellis.raster.io.geotiff._
+import geotrellis.raster.render.ColorMap
+
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object WebServer {
 
@@ -32,9 +40,7 @@ object WebServer {
     asBytes match {
       case Some(true) => HttpEntity(ContentTypes.`text/html(UTF-8)`, fileAsBytes)
       case _ => {
-        HttpEntity(ContentTypes.`text/html(UTF-8)`, s"""<h1>${fileName}</h1>
-          <h2>CRS: ${tiffData.crs}</h2>
-          <h2>Extent: ${tiffData.extent}</h2>""")
+        Future{ImageryStats(tiffData.tile.statistics.get)}
       }
     }
   }
@@ -46,12 +52,30 @@ object WebServer {
       case Some(true) => HttpEntity(ContentTypes.`text/html(UTF-8)`, fileAsBytes)
       case _ => {
         val tiffData: SinglebandGeoTiff = readRasterData(fileAsBytes)
-        HttpEntity(ContentTypes.`text/html(UTF-8)`, s"""<h1>Bucket: ${bucket}</h1>
-          <h2>Key: ${key}</h2>
-          <h2>Extent: ${tiffData.crs}</h2>
-          <h2>Extent: ${tiffData.extent}</h2>""")
+        Future{ImageryStats(tiffData.tile.statistics.get)}
       }
     }
+  }
+
+  def singleBandTifToPngBytes(tiffData: SinglebandGeoTiff): Array[Byte] = {
+    val s = "viridis"
+    val pixels = 512
+    val zmin = 0
+    val zmax = 255
+    val interval = 20
+    val colorMap = ColorMap(
+      (zmin to zmax by interval).toArray,
+      ColorOptions.fromString(s).getOrElse(ColorOptions.default)
+    )
+    tiffData.tile.resample(pixels, pixels).renderPng(colorMap).bytes
+  }
+
+  def readLocalFileAsPng(fileName: String) = complete {
+    HttpEntity(MediaTypes.`image/png`, singleBandTifToPngBytes(readRasterData(fileName)))
+  }
+
+  def readS3FileAsPng(bucket: String, key: String) = complete {
+    HttpEntity(MediaTypes.`image/png`, singleBandTifToPngBytes(readRasterData(getBytes(bucket, key))))
   }
 
   def main(args: Array[String]) {
@@ -72,6 +96,18 @@ object WebServer {
               parameter("bucket".as[String], "key".as[String], "asBytes".as[Boolean].?) { (bucket, key, asBytes) =>
                 get { readS3File(bucket, key, asBytes) }
               }
+            }
+          }
+        } ~
+        pathPrefix("png") {
+          pathPrefix("local") {
+            parameter("name".as[String]) { (name) =>
+              get { readLocalFileAsPng(name) }
+            }
+          } ~
+          pathPrefix("s3") {
+            parameter("bucket".as[String], "key".as[String]) { (bucket, key) =>
+              get { readS3FileAsPng(bucket, key) }
             }
           }
         }
