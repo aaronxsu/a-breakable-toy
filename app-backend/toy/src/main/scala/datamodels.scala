@@ -5,6 +5,7 @@ import akka.http.scaladsl.unmarshalling._
 import io.circe._
 import io.circe.generic.JsonCodec
 import geotrellis.raster.summary.Statistics
+import java.util.UUID
 
 @JsonCodec
 case class ImageryStats[T](
@@ -16,6 +17,14 @@ case class ImageryStats[T](
   zmax: T,
   zmin: T
 )
+
+@JsonCodec
+case class TiffPointer(
+  id: UUID,
+  local_file_path: String,
+  s3_file_path: String
+)
+
 
 object ImageryStats {
   def apply(stats: Statistics[Int]): ImageryStats[Int] =

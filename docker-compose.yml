@@ -19,7 +19,7 @@ services:
     build:
       context: ./app-backend
     links:
-      - postgres
+      - postgres:database.service.aaronxsu.toy
     depends_on:
       postgres:
         condition: service_healthy
