@@ -16,4 +16,10 @@ object Dependencies {
   lazy val circeParser = "io.circe" %% "circe-parser" % "0.9.1"
   lazy val circeOptics = "io.circe" %% "circe-optics" % "0.9.1"
   lazy val akkaCirceJson = "de.heikoseeberger" %% "akka-http-circe" % "1.20.0-RC1"
+  lazy val doobieCore = "org.tpolecat" %% "doobie-core" % "0.5.0-M14"
+  lazy val doobieHikari = "org.tpolecat" %% "doobie-hikari" % "0.5.0-M14"
+  lazy val doobiePostgres = "org.tpolecat" %% "doobie-postgres"% "0.5.0-M14"
+  lazy val doobieSpecs = "org.tpolecat" %% "doobie-specs2" % "0.5.0-M14"
+  lazy val doobieScalatest = "org.tpolecat" %% "doobie-scalatest" % "0.5.0-M14"
+  lazy val catsCore = "org.typelevel" %% "cats-core" % "1.0.1"
 }

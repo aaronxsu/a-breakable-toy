@@ -40,7 +40,12 @@ lazy val root = (project in file(".")).
       circeGenericExtras,
       circeParser,
       circeOptics,
-      akkaCirceJson
+      akkaCirceJson,
+      doobieCore,
+      doobieHikari,
+      doobiePostgres,
+      doobieSpecs,
+      doobieScalatest
     ),
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
   )
