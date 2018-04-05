@@ -1,5 +1,5 @@
 CREATE TABLE tiffs(
-  id UUID PRIMARY KEY NOT NULL,
+  id VARCHAR(255) PRIMARY KEY NOT NULL,
   local_file_path TEXT,
   s3_file_path TEXT
 );
