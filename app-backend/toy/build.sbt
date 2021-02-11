@@ -4,8 +4,9 @@ lazy val root = (project in file(".")).
   settings(
     inThisBuild(List(
       organization := "com.aaronxsu",
-      scalaVersion := "2.11.11",
-      version      := "0.1.0-SNAPSHOT"
+      scalaVersion in ThisBuild := "2.11.11",
+      version      := "0.1.0-SNAPSHOT",
+      scapegoatVersion in ThisBuild := "1.1.0"
     )),
     name := "toy",
     scalacOptions ++= Seq(
